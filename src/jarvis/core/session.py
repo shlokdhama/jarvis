@@ -10,3 +10,6 @@ class Session:
         response=self.llm.generate(self.messages)
         self.messages.append(response)
         return response.content
+    
+    def history(self) -> list[Message]:
+        return list(self.messages)
