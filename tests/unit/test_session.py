@@ -1,5 +1,6 @@
 from jarvis.llm.message import Message
 from jarvis.core.session import Session
+import pytest
 
 class FakeLLM:
     def __init__(self):
@@ -10,6 +11,10 @@ class FakeLLM:
             role="assistant",
             content="fake response"
         )
+
+class FailingLLM:
+    def generate(self, messages: list[Message]) -> Message:
+        raise RuntimeError("LLM request failed")
 
 def test_send_returns_response():
     fake = FakeLLM()
@@ -40,3 +45,13 @@ def test_second_send_includes_previous_messages():
     assert second_call[1].content == "fake response"
     assert second_call[2].role == "user"
     assert second_call[2].content == "how are you?"
+
+def test_send_in_failingllm():
+    llm = FailingLLM()
+    session = Session(llm)
+    with pytest.raises(RuntimeError, match="LLM request failed"):
+        session.send("hello")
+
+    assert len(session.messages) == 1
+    assert session.messages[0].role == "user"
+    assert session.messages[0].content == "hello"
