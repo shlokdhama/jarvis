@@ -1,7 +1,9 @@
-from jarvis.config import API_KEY, MODEL
-from jarvis.llm.message import Message
 from google import genai
 from google.genai import types
+
+from jarvis.config import API_KEY, MODEL
+from jarvis.llm.message import Message
+
 
 class GeminiProvider:
     def __init__(self):
